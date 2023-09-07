@@ -2,20 +2,39 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getPhotoById } from "../utils/unsplash";
 import { Full } from "unsplash-js/dist/methods/photos/types";
+import Error from "./Error";
 
 const PhotoDetail = () => {
   const [photoDetails, setPhotoDetail] = useState<Full>();
+  const [showError, setShowError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+
   const { id = "" } = useParams();
 
   useEffect(() => {
     const run = async () => {
-      const response = await getPhotoById(id);
-      setPhotoDetail(response);
+      try {
+        const response = await getPhotoById(id);
+        setPhotoDetail(response);
+      } catch (err) {
+        console.log(err);
+        setErrorMessage(err + "");
+        setShowError(true);
+      }
     };
     run();
   });
+
+  const handleCloseError = () => {
+    setShowError(false);
+  };
   return (
     <>
+      {showError ? (
+        <div className="justify-center flex">
+          <Error message={errorMessage} handleCloseError={handleCloseError} />
+        </div>
+      ) : null}
       <div className="max-w-lg mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
         <div className="lg:flex">
           <img src={photoDetails?.urls.full} />

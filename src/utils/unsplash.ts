@@ -1,6 +1,6 @@
 import { createApi } from "unsplash-js";
 import { ColorId, Orientation } from "unsplash-js";
-const accessKey = "FUUHLKjwvoaJwFT8L7zjQdmkVZrct9T_RZ0eK2YGuFg";
+const accessKey = process.env.REACT_APP_UNSPLASH_KEY || "";
 
 const unsplash = createApi({
   accessKey: accessKey,
@@ -22,20 +22,28 @@ const getPhotos = (
     })
     .then((res) => {
       if (res.errors) {
-        console.error("error ocurred", res.errors[0]);
+        throw new Error(`Error ocurred: ${res.errors[0]}`);
       } else {
         const { results } = res.response;
         return results;
       }
+    })
+    .catch((err) => {
+      throw new Error(`Error ocurred: ${err.message}`);
     });
 
 const getPhotoById = (id: string) =>
-  unsplash.photos.get({ photoId: id }).then((res) => {
-    if (res.errors) {
-      console.error("error ocurred", res.errors[0]);
-    } else {
-      return res.response;
-    }
-  });
+  unsplash.photos
+    .get({ photoId: id })
+    .then((res) => {
+      if (res.errors) {
+        throw new Error(`Error ocurred: ${res.errors[0]}`);
+      } else {
+        return res.response;
+      }
+    })
+    .catch((err) => {
+      throw new Error(`Error ocurred: ${err.message}`);
+    });
 
 export { getPhotos, getPhotoById };

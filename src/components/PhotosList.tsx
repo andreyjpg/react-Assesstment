@@ -2,9 +2,17 @@ import useIntersectionObserver from "../utils/useIntesectionObserver";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import PhotoContext from "../context/PhotoContext";
+import Error from "./Error";
 
 const PhotosList = () => {
-  const { photosList, nextPage, isLoading } = useContext(PhotoContext);
+  const {
+    photosList,
+    nextPage,
+    isLoading,
+    showError,
+    errorMessage,
+    handleCloseError,
+  } = useContext(PhotoContext);
 
   const lastPhotoRef = useIntersectionObserver<HTMLDivElement>(() => {
     void nextPage();
@@ -12,6 +20,11 @@ const PhotosList = () => {
 
   return (
     <>
+      {showError ? (
+        <div className="flex justify-center mt-5">
+          <Error handleCloseError={handleCloseError} message={errorMessage} />
+        </div>
+      ) : null}
       <div className="container mx-auto space-y-2 md:space-y-0 md:gap-2 md:grid md:grid-cols-4 mt-8">
         {photosList.map((photo, i, photos) => (
           <div

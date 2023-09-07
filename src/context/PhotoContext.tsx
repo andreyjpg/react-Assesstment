@@ -15,6 +15,9 @@ type InitialState = {
   setQuery: Dispatch<React.SetStateAction<string>>;
   color: ColorId | undefined;
   orientation: Orientation | undefined;
+  showError: boolean;
+  errorMessage: string;
+  handleCloseError: () => void;
   handleSelectChange: (value: ColorId | Orientation) => void;
 };
 
@@ -29,6 +32,8 @@ export function PhotoProvider({ children }: { children: ReactNode }) {
   const [orientation, setOrientation] = useState<Orientation | undefined>(
     undefined
   );
+  const [showError, setShowError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const nextPage = async () => {
     const newPage = currentPage + 1;
@@ -40,10 +45,15 @@ export function PhotoProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const run = async () => {
-      setIsLoading(true);
-      const response = await getPhotos(query, color, orientation, 1);
-      setPhotoList(response as Basic[]);
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        const response = await getPhotos(query, color, orientation, 1);
+        setPhotoList(response as Basic[]);
+        setIsLoading(false);
+      } catch (err) {
+        setErrorMessage(err + "");
+        setShowError(true);
+      }
     };
     run();
   }, [query, color, orientation]);
@@ -60,6 +70,11 @@ export function PhotoProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const handleCloseError = () => {
+    setShowError(false);
+    setErrorMessage("");
+  };
+
   const valueContext = {
     photosList,
     setPhotoList,
@@ -72,6 +87,9 @@ export function PhotoProvider({ children }: { children: ReactNode }) {
     color,
     orientation,
     handleSelectChange,
+    showError,
+    errorMessage,
+    handleCloseError,
   };
   return (
     <PhotoContext.Provider value={valueContext}>
