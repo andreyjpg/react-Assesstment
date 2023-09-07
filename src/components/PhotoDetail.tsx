@@ -35,6 +35,7 @@ const PhotoDetail = () => {
           <Error message={errorMessage} handleCloseError={handleCloseError} />
         </div>
       ) : null}
+
       <div className="max-w-lg mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl">
         <div className="lg:flex">
           <img src={photoDetails?.urls.full} />
